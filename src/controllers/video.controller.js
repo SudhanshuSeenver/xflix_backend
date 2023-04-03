@@ -1,5 +1,4 @@
 const videoService = require("../services/video.service");
-const { validMongoId } = require("../validations/video.validation");
 
 async function getAllVideos(req, res) {
   try {
@@ -33,16 +32,11 @@ async function getVideo(req, res) {
   try {
     const { videoId } = req.params;
 
-    // Check for valid mongoDB id
-    if (!validMongoId(videoId)) {
-      return res
-        .status(400)
-        .json({ message: '"videoId" must be a valid mongo id' });
-    }
-
     const video = await videoService.getVideoById(videoId);
     if (!video)
-      res.status(404).json({ message: "No video found with matching id" });
+      return res
+        .status(404)
+        .json({ message: "No video found with matching id" });
     return res.status(200).json(video);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -52,8 +46,40 @@ async function getVideo(req, res) {
 async function uploadVideo(req, res) {
   try {
     const video = await videoService.addVideo(req.body);
-    if (!video) true;
+    if (!video) return res.status(500).json({ message: err.message });
     res.status(201).json(video);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
+
+async function changeVotes(req, res) {
+  try {
+    const { videoId } = req.params;
+    const body = req.body;
+    const video = await videoService.updateVote(videoId, body);
+    if (!video)
+      return res
+        .status(404)
+        .json({ message: "No video found with matching id" });
+    res.status(204).send();
+    // res.status(200).json(video);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
+
+async function changeViews(req, res) {
+  try {
+    const { videoId } = req.params;
+
+    const video = await videoService.updateViews(videoId);
+    if (!video)
+      return res
+        .status(404)
+        .json({ message: "No video found with matching id" });
+    res.status(204).send();
+    // res.status(200).json(video);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -63,4 +89,6 @@ module.exports = {
   getAllVideos,
   getVideo,
   uploadVideo,
+  changeVotes,
+  changeViews,
 };

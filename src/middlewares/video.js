@@ -3,6 +3,20 @@ const {
   validContentRating,
   validSortBy,
 } = require("../validations/video.validation");
+const ObjectId = require("mongoose").Types.ObjectId;
+
+function validMongoId(req, res, next) {
+  const { videoId: id } = req.params;
+
+  if (ObjectId.isValid(id)) {
+    if (String(new ObjectId(id)) === id) {
+      return next();
+    }
+  }
+  return res
+    .status(400)
+    .json({ message: '"videoId" must be a valid mongo id' });
+}
 
 async function validateFilterParams(req, res, next) {
   try {
@@ -12,9 +26,9 @@ async function validateFilterParams(req, res, next) {
     if (sortBy) {
       const valid = validSortBy(sortBy);
       if (!valid) {
-        return res
-          .status(400)
-          .json({ message: "\"sortBy\" must be one of [viewCount, releaseDate]"});
+        return res.status(400).json({
+          message: '"sortBy" must be one of [viewCount, releaseDate]',
+        });
       }
     }
 
@@ -44,4 +58,4 @@ async function validateFilterParams(req, res, next) {
   }
 }
 
-module.exports = { validateFilterParams };
+module.exports = { validateFilterParams, validMongoId };

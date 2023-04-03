@@ -1,12 +1,4 @@
-const ObjectId = require("mongoose").Types.ObjectId;
 const Joi = require("joi");
-
-function validMongoId(id) {
-  if (ObjectId.isValid(id)) {
-    if (String(new ObjectId(id)) === id) return true;
-  }
-  return false;
-}
 
 function validGenre(genre) {
   const genres = {
@@ -61,10 +53,15 @@ const videoSchema = Joi.object({
   previewImage: Joi.string().required(),
 });
 
+const voteSchema = Joi.object({
+  vote: Joi.string().valid("downVote", "upVote").required(),
+  change: Joi.string().valid("increase", "decrease").required(),
+});
+
 module.exports = {
-  validMongoId,
   validGenre,
   validContentRating,
   validSortBy,
   videoSchema,
+  voteSchema,
 };
