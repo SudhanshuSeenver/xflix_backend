@@ -12,7 +12,7 @@ async function getAllVideos(req, res) {
       sortBy
     );
     if (!videos)
-      res.status(404).json({ code: 404, message: "No videos found" });
+      return res.status(404).json({ code: 404, message: "No videos found" });
     if (title) {
       const filterByTitle = videos.filter((video) => {
         const vTitle = video.title.toLowerCase();
