@@ -11,6 +11,7 @@ const {
 const { validMongoId } = require("../../middlewares/video");
 
 router.get("/", validateFilterParams, videoController.getAllVideos);
+
 router.post("/", validateSchema(videoSchema), videoController.uploadVideo);
 
 // router.use(validMongoId);
